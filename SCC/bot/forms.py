@@ -6,3 +6,8 @@ class TeamForm(ModelForm):
     class Meta:
         model = Team
         fields = ['Name', 'Picture', 'Decription', 'Place', 'Direction', 'ManagersName', 'ManagersPhone', 'ManagersEmail']
+
+class DirectionForm(ModelForm):
+    class Meta:
+        model = Direction
+        fields = ['Name']

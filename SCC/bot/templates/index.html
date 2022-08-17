@@ -10,6 +10,9 @@
     <link rel="stylesheet" href={% static 'css/styles.css' %}>
 </head>
 <body>
+    <div class="mobile">
+        <p>К сожалению, данная платформа не рассчитана на такое разрешение. Система рассчитана на работу с исользованием компьютора.</p>
+    </div>
     <div>
         <ul class="navbar">
             <li data-link="/applications" class="selected">Заявки</li>
@@ -18,12 +21,6 @@
         </ul>
     </div>
     <div data-link="/applications" class="content">
-        <div>
-            <ul class="navbar">
-                <li>Просмотренные</li>
-                <li class="selected">Непросмотренные</li>
-            </ul>
-        </div>
         <div class="applications">
             <div class="annotation">
                 <div class="col-1">ФИО</div>
@@ -31,7 +28,6 @@
                 <div class="col-3">Напраление</div>
                 <div class="col-4">Коллектив</div>
                 <div class="col-5">Дата и время</div>
-                <div class="col-6">Кнопочки</div>
             </div>
             {% for application in applications %}
             <div class="application">
@@ -40,48 +36,53 @@
                 <div class="col-3">{{application.Direction.Name}}</div>
                 <div class="col-4">{{application.Team.Name}}</div>
                 <div class="col-5">{{application.Date.DateNTime}}</div>
-                <div class="col-6">Кнопочки</div>
             </div>
             {% endfor %}
-            <div class="application">
-                <div class="col-1">Фомина Елизавета Стениславовна</div>
-                <div class="col-2">+7(913)172-49-14</div>
-                <div class="col-3">Танцевальное</div>
-                <div class="col-4">Калипсо</div>
-                <div class="col-5">24.09 18:00</div>
-                <div class="col-6">Кнопочки</div>
-            </div>
         </div>
     </div>
     <div data-link="/teams" class="content">
-        
         <div class="teams">
-            <div class="team-popup">
-                <img class="icon" src={% static 'img/plus.png' %} alt="create">
-                <p>Добавить новый коллектив</p>
-            </div>
             <div class="team">
-                <h3>Калипсо</h3>
-                <img src="http://photo.sfu-kras.ru/files/imagecache/photo/photos2/foto2.jpeg">
+                <h3>Добавить новый коллекив:</h3>
+                <form class="team-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{team_form.as_p}}
+                    <p>Даты и время кастингов:</p>
+                    <img class="icon add-date" src={% static 'img/plus.png' %} alt="create">
+                    </br>
+                    </br>
+                    <button type="button">Сохранить</button>
+                </form>
+            </div>
+            {% for team in teams %}
+            <div class="team">
+                
+                <img data-team-id={{team.id}} class="icon delete delete-team" src={% static 'img/cancel.png' %} alt="create">
+                <h3>{{team.Name}}</h3>
+                <img class="photo" src={{team.Picture.url}}>            
                 <p>
-                    Театр танца «КалипсО» — коллектив с богатой историей и креативным мышлением. В театре занимается около 200 человек, и одной из самых ярких групп является Молодёжный состав СФУ. В числе его участников призёры Молодёжных Дельфийских игр России, участники российской Студенческой весны, победители и обладатели Гран-при фестивалей в Черногории, Македонии, Чехии, Австрии и, конечно же, России. Мы постоянные участники всероссийских и краевых молодёжных мероприятий и форумов. Обладатели 3 золотых и серебряной медали I WDA WORLD CHAMPIONSHIP Budapest 2019 в дисциплинах Dance Show Adult и Contemporary Dance.
+                    {{team.Decription}} 
                 </p>
             </div>
-            <div class="team">
-                <h3>Калипсо</h3>
-                <img src="http://photo.sfu-kras.ru/files/imagecache/photo/photos2/foto2.jpeg">
-                <p>
-                    Театр танца «КалипсО» — коллектив с богатой историей и креативным мышлением. В театре занимается около 200 человек, и одной из самых ярких групп является Молодёжный состав СФУ. В числе его участников призёры Молодёжных Дельфийских игр России, участники российской Студенческой весны, победители и обладатели Гран-при фестивалей в Черногории, Македонии, Чехии, Австрии и, конечно же, России. Мы постоянные участники всероссийских и краевых молодёжных мероприятий и форумов. Обладатели 3 золотых и серебряной медали I WDA WORLD CHAMPIONSHIP Budapest 2019 в дисциплинах Dance Show Adult и Contemporary Dance.
-                </p>
-            </div>
-            <div class="team">
-                <h3>Калипсо</h3>
-                <img src="http://photo.sfu-kras.ru/files/imagecache/photo/photos2/foto2.jpeg">
-                <p>
-                    Театр танца «КалипсО» — коллектив с богатой историей и креативным мышлением. В театре занимается около 200 человек, и одной из самых ярких групп является Молодёжный состав СФУ. В числе его участников призёры Молодёжных Дельфийских игр России, участники российской Студенческой весны, победители и обладатели Гран-при фестивалей в Черногории, Македонии, Чехии, Австрии и, конечно же, России. Мы постоянные участники всероссийских и краевых молодёжных мероприятий и форумов. Обладатели 3 золотых и серебряной медали I WDA WORLD CHAMPIONSHIP Budapest 2019 в дисциплинах Dance Show Adult и Contemporary Dance.
-                </p>
-            </div>
+            {% endfor %}
         </div> 
+    </div>
+    <div data-link="/directions" class="content">
+        <div class="directions">
+            <div class="direction-input"> 
+                <div class="direction-popup">
+                    <img class="icon" src={% static 'img/plus.png' %} alt="create">
+                </div>
+                <input type="text">
+            </div>
+            
+            {% for direction in directions %}
+            <div class="direction">
+                <img data-direction-id={{direction.id}} class="icon delete delete-direction" src={% static 'img/cancel.png' %} alt="create">
+                {{direction.Name}}
+            </div>
+            {% endfor %}
+        </div>
     </div>
     </body>
     <script src={% static '/js/jquery-3.6.0.min.js'%}></script>
