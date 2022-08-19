@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 class TgUser(models.Model):
     id = models.CharField(max_length=30, primary_key=True)
     Status = models.CharField(max_length=30)
+    EditMessId = models.BigIntegerField(null=True)
 
 class Direction(models.Model):
     Name = models.CharField(max_length=30)

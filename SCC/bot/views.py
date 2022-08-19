@@ -1,4 +1,3 @@
-from tkinter import Place
 from django.shortcuts import render
 from django.views import View
 from bot.forms import *

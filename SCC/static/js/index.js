@@ -142,7 +142,7 @@ function getData() {
                 <div class="col-2">${element.Phone}</div>
                 <div class="col-3">${element.Direction__Name}</div>
                 <div class="col-4">${element.Team__Name}</div>
-                <div class="col-5">${date.getUTCMonth()<9?"0":""}${date.getUTCMonth()+1}.${date.getUTCDate()} - ${date.getUTCHours()+7}:${date.getUTCMinutes()}</div></div>`
+                <div class="col-5">${date.getMonth()<9?"0":""}${date.getMonth()+1}.${date.getDate()<10?"0":""}${date.getDate()} - ${date.getHours()<10?"0":""}${date.getHours()}:${date.getMinutes()<10?"0":""}${date.getMinutes()}</div></div>`
             })
             
             $('.content > .applications').html(html);

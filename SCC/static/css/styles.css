@@ -21,6 +21,9 @@ body{
     list-style: none;
     border-radius: 8px;
     font-weight:bold;
+    -webkit-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2); 
 }
 .navbar > .selected{
     color: orange;
@@ -36,6 +39,9 @@ body{
 .applications{
     text-align: left;
     border-radius: 8px;
+    -webkit-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2); 
 }
 
 .annotation{
@@ -58,6 +64,7 @@ body{
     grid-template-columns: auto 15% 15% 20% 15%;
     background-color: white;
     padding: 0;
+    
 }
 
 li{
@@ -90,6 +97,9 @@ ul{
     border-radius: 8px;
     margin-bottom: 20px;
     transition: height ease-in-out .6s;
+    -webkit-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2); 
 }
 .photo{
     border-radius: 8px;
@@ -122,7 +132,9 @@ ul{
     justify-content: stretch;
 }
 .direction{
-    
+    -webkit-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2); 
     transition: width ease-in-out .2s;
     border-radius: 8px;
     background-color: white;
@@ -239,7 +251,17 @@ input{
     display: flex;
     justify-content: space-between;
     width: 100%;
+    background: #ffd9b5;
+      width: calc(100% - 20px);
+      border: none;
+      height: 40px;
+      border-radius: 15px;
+      font-size: 15px;
+      font-family: "Roboto";
 }
+input:focus {
+    border: none;
+    background: #DDC8B4; }
 
 .Data{
     display: block;
@@ -262,8 +284,7 @@ input{
       margin-bottom: 20px; }
     .form h1 {
       height: 38px;
-      margin: auto 0;
-      margin-left: 10px; }
+      margin: auto 0; }
     .form input {
       background: #ffd9b5;
       width: calc(100% - 20px);
