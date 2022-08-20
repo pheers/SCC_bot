@@ -1,15 +1,16 @@
-$("li").click((e) => {
-    console.log($(e.target))
+function navbar(e) {
     if($(e.target).data("link")){
-        $(".content#selected").css("left", "-100%").css("opacity", "0").attr("id", null)
-        $('li.selected').removeClass("selected")
+        $(".content#selected").css("left", "100%").css("opacity", "0")
+        $('li.selected').removeClass("selected").click(navbar)
         setTimeout(()=>{
-            $(".content#selected").css("display", "none").css("left", "100%")
-            $(e.target).addClass("selected")
-            $(`.content*[data-link="${$(e.target).data("link")}"]`).css("display", "block").css("left", "15%").css("opacity", "1").attr("id", "selected")
+            $(".content#selected").css("left", "-100%").attr("id", null)
+            $(e.target).addClass("selected").off('click');
+            $(`.content*[data-link="${$(e.target).data("link")}"]`).css("left", "15%").css("opacity", "1").attr("id", "selected")
         },200)
     }
-})
+}
+
+$("li").not(".selected").click(navbar)
 
 $('.direction-input').click((e)=> {
     $($($(e.target).closest('.direction-input')).children('input')[0]).css("display", "block");
@@ -41,6 +42,7 @@ $(".add-date").click((e)=> {
 
 function createTeam(team_form){
     let formData = new FormData($(team_form)[0])
+    $(".spinner").css("display", "block")
     fetch("/teams",
         {
             headers: {
@@ -51,6 +53,7 @@ function createTeam(team_form){
         })
         .then((response) => response.json())
         .then((data) => {
+            $(".spinner").css("display", "none")
             console.log(data)})
             // $('.direction-input').after(
             //     $('<div>', {
@@ -59,10 +62,14 @@ function createTeam(team_form){
             //     }).prepend($(`<img data-direction-id="${data.id}" class="icon delete-direction" src="/static/img/cancel.png" alt="Удалить">`).click((e) => deleteDirection($(e.target)))))
             //     $(team).val(null).css('display', 'none') 
             // })
-        .catch(function(res){console.log(res)}) 
+        .catch(function(res){
+            console.log(res)
+            $(".spinner").css("display", "none")
+        }) 
 }
 
 function createDirection(team){
+    $(".spinner").css("display", "block")
     fetch("/directions",
         {
             headers: {
@@ -82,12 +89,18 @@ function createDirection(team){
                     text: data.Name
                 }).prepend($(`<img data-direction-id="${data.id}" class="icon delete delete-direction" src="/static/img/cancel.png" alt="Удалить">`).click((e) => deleteDirection($(e.target)))))
                 $(team).val(null).css('display', 'none') 
-            })
-        .catch(function(res){ $(team).val(null).css('display', 'none') 
+                $(".spinner").css("display", "none")
+            }
+            
+            )
+        .catch(function(res){ 
+            $(team).val(null).css('display', 'none')
+            $(".spinner").css("display", "none") 
     })
 }
 
 function deleteTeam(team){
+    $(".spinner").css("display", "block")
     fetch('/teams?id=' + team.data('team-id'), {
         headers: {
             'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -95,6 +108,7 @@ function deleteTeam(team){
         method: 'DELETE',
     })
     .then(() => {
+        $(".spinner").css("display", "none")
         $(team.closest(".team")).remove()
         
     })
@@ -103,6 +117,7 @@ function deleteTeam(team){
 
 function deleteDirection(direction){
     console.log(direction)
+    $(".spinner").css("display", "block")
     fetch('/directions?id=' + direction.data('direction-id'), {
         headers: {
             'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -110,6 +125,7 @@ function deleteDirection(direction){
         method: 'DELETE',
     })
     .then(() => {
+        $(".spinner").css("display", "none")
         $(direction.closest('.direction')).css("opacity", "0")
         $(direction.closest('.direction')).css("width", "0")
         $(direction.closest('.direction')).css("margin", "0")

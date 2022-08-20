@@ -21,13 +21,11 @@ def get_text_messages(message):
   user, isExist = TgUser.objects.get_or_create(id = message.from_user.id)
   application = Application.objects.get_or_create(TgUser = user, IsFinished = False)[0]
   for mess in MessageForDelete.objects.filter(TgUser = user):
-    print(mess.mess_id)
     try:
       bot.delete_message(message.from_user.id, mess.mess_id)
     except:
       pass
     mess.delete()
-  print(user.Status)
   if message.text == "/start":
     user.Status = "Выбор направления"
     user.save()
@@ -38,7 +36,6 @@ def get_text_messages(message):
     for direction in Direction.objects.all():
       btn = telebot.types.InlineKeyboardButton(direction.Name, callback_data=direction.id)
       kb.add(btn)
-    print(len(kb.keyboard)>0)
     kb = kb if len(kb.keyboard)>0 else telebot.types.ReplyKeyboardRemove(selective=False)
     res = bot.send_message(message.from_user.id, "Выберите интересующее Вас направление", reply_markup = kb)
     user.EditMessId = res.id
@@ -64,7 +61,6 @@ def get_text_messages(message):
       user.EditMessId = res.id
       user.save()
     else:
-      print(message.text)
       res = bot.send_message(message.from_user.id, "Неверный формат введенных данных. Попробуй еще раз)")
       MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
   else:
@@ -77,7 +73,6 @@ def get_text_messages(message):
 def callback_inline(call):
   try:
       if call.message:
-          print(call.message.from_user.id)
           user = TgUser.objects.get_or_create(id = call.message.chat.id)[0]
           application = Application.objects.get_or_create(TgUser = user, IsFinished = False)[0]
           for mess in MessageForDelete.objects.filter(TgUser = user):

@@ -10,6 +10,7 @@ import re
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.shortcuts import redirect
+
 # Create your views here.
 
 class Main(View):

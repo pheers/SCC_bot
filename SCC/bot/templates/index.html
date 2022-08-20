@@ -14,13 +14,18 @@
         <p>К сожалению, данная платформа не рассчитана на такое разрешение. Система рассчитана на работу с исользованием компьютора.</p>
     </div>
     <div>
+    <div class="spinner">
+        <div>
+            <div class="lds-ripple"><div></div><div></div></div>
+        </div>
+    </div>
         <ul class="navbar">
             <li data-link="/applications" class="selected">Заявки</li>
             <li data-link="/directions">Направления</li>
             <li data-link="/teams">Коллективы</li>
         </ul>
     </div>
-    <div data-link="/applications" class="content">
+    <div id="selected" data-link="/applications" style="opacity: 1;" class="content">
         <div class="applications">
             <div class="annotation">
                 <div class="col-1">ФИО</div>
@@ -40,14 +45,50 @@
             {% endfor %}
         </div>
     </div>
-    <div data-link="/teams" class="content">
+    <div data-link="/teams" style="left: -100%;" class="content">
         <div class="teams">
             <div class="team">
-                <h3>Добавить новый коллекив:</h3>
                 <form class="team-form" enctype="multipart/form-data">
+
+                    <h3>Добавить новый коллекив:</h3>
                     {% csrf_token %}
-                    {{team_form.as_p}}
-                    <p>Даты и время кастингов:</p>
+                    <div class="form-row">
+                        <div style="width: 50%;" class="input">
+                            <p>Название:</p>
+                            {{team_form.Name}}
+                        </div>
+                         <div class="input">
+                            <p>Место проведения кастингов:</p>
+                            {{team_form.Place}}
+                         </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input">
+                            <p>Описание:</p>
+                            {{team_form.Decription}}
+                        </div>
+                        <div class="input">
+                            <p>Фотография:</p>
+                            {{team_form.Picture}}
+                        </div>
+                    </div>
+                    <h4>Контактные данные:</h4>
+                    <div class="form-row">
+                        <div class="input">
+                            <p>Имя:</p>
+                            {{team_form.ManagersName}}
+                        </div>
+                        <div class="input">
+                            <p>Номер телефона:</p>
+                            {{team_form.ManagersPhone}}
+                        </div>
+                        <div class="input">
+                            <p>Почта:</p>
+                            {{team_form.ManagersEmail}}
+                        </div>
+                    </div>
+
+                    <h4>Даты и время кастингов:</h4>
                     <img class="icon add-date" src={% static 'img/plus.png' %} alt="create">
                     </br>
                     </br>
@@ -67,7 +108,7 @@
             {% endfor %}
         </div> 
     </div>
-    <div data-link="/directions" class="content">
+    <div data-link="/directions" style="left: -100%;" class="content">
         <div class="directions">
             <div class="direction-input"> 
                 <div class="direction-popup">
