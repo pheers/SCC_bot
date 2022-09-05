@@ -31,14 +31,36 @@ $(".delete-direction").click((e) => deleteDirection($(e.target)))
 
 $(".delete-team").click((e) => deleteTeam($(e.target)))
 
-$(".team-form>button").click((e) => createTeam($($(e.target).closest("form"))))
+$("#create-team>button").click((e) => createTeam($($(e.target).closest("form"))))
+
+$(".team-form.update>button").click((e) => updateTeam($($(e.target).closest("form"))))
 
 $(".add-date").click((e)=> {
-    $(e.target).after(`<div class="data-div"><input class="Data" name="DateTime" type="datetime-local"><img class="icon" src="static/img/cancel.png" alt="create"></div>`)
+    $($(e.target).next()).append(`<div class="data-div"><input class="Data" name="Date"><img class="icon" src="static/img/cancel.png" alt="create"></div>`)
     $(".data-div>img").click((e) => {
         $(e.target).closest(".data-div").remove()
     })
 })
+
+$('input[name="Picture"]').change(function(){
+    readURL(this)
+})
+
+$(".delete-date").click((e) => {
+    $(e.target).closest(".data-div").remove()
+})
+
+function readURL(input) {
+ if (input.files && input.files[0]) {
+  var reader = new FileReader();
+    
+  reader.onloadend = function(e) {
+   $('#prevImage').css("display", "block").attr('src', e.target.result);
+  }
+    
+  reader.readAsDataURL(input.files[0]);
+ }
+}
 
 function createTeam(team_form){
     let formData = new FormData($(team_form)[0])
@@ -65,6 +87,34 @@ function createTeam(team_form){
         .catch(function(res){
             console.log(res)
             $(".spinner").css("display", "none")
+        }) 
+}
+
+function updateTeam(team_form){
+    let formData = new FormData($(team_form)[0])
+    $(".spinner").css("display", "block")
+    fetch("/team/update",
+        {
+            headers: {
+            'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').attr('value')
+            },
+            method: "POST",
+            body: formData
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            $(".spinner").css("display", "none")
+            console.log(data)})
+            // $('.direction-input').after(
+            //     $('<div>', {
+            //         class: "direction",
+            //         text: data.Name
+            //     }).prepend($(`<img data-direction-id="${data.id}" class="icon delete-direction" src="/static/img/cancel.png" alt="Удалить">`).click((e) => deleteDirection($(e.target)))))
+            //     $(team).val(null).css('display', 'none') 
+            // })
+        .catch(function(res){
+            console.log(res)
+            //$(".spinner").css("display", "none")
         }) 
 }
 
@@ -148,17 +198,15 @@ function getData() {
             <div class="col-2">Номер телефона</div>
             <div class="col-3">Напраление</div>
             <div class="col-4">Коллектив</div>
-            <div class="col-5">Дата и время</div>
+            <div class="col-5">Дата</div>
         </div>`
             data.applications.forEach(element => {
-                
-                date = new Date(element.Date__DateNTime)
                 html += `<div data-id="${element.id}" class="application">
                 <div class="col-1">${element.Name}</div>
                 <div class="col-2">${element.Phone}</div>
                 <div class="col-3">${element.Direction__Name}</div>
                 <div class="col-4">${element.Team__Name}</div>
-                <div class="col-5">${date.getMonth()<9?"0":""}${date.getMonth()+1}.${date.getDate()<10?"0":""}${date.getDate()} - ${date.getHours()<10?"0":""}${date.getHours()}:${date.getMinutes()<10?"0":""}${date.getMinutes()}</div></div>`
+                <div class="col-5">${element.Date__Date}</div></div>`
             })
             
             $('.content > .applications').html(html);

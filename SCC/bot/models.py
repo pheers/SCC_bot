@@ -1,4 +1,5 @@
 from contextlib import nullcontext
+from multiprocessing.dummy import Manager
 from statistics import mode
 from django.db import models
 from django.contrib.auth.models import User
@@ -16,18 +17,22 @@ class Direction(models.Model):
 
 class Team(models.Model):
     Direction = models.ForeignKey(Direction, on_delete=models.CASCADE)
-    Name = models.CharField(max_length=30, unique=True)
+    Name = models.CharField(max_length=300, unique=True)
     Picture = models.ImageField(upload_to ='static/photos/')
-    Decription = models.CharField(max_length=300)
+    Decription = models.CharField(max_length=2000)
     Place = models.CharField(max_length=300)
-    ManagersName = models.CharField(max_length=30)
-    ManagersPhone = models.CharField(max_length=20)
-    ManagersEmail =models.CharField(max_length=30)
-
+    Vk = models.CharField(max_length=300)
+    Contacts = models.CharField(max_length=1000)
+    Prompt = models.CharField(max_length=2000)
+    Time = models.CharField(max_length=300)
 
 class Date(models.Model):
+    Date = models.CharField(max_length=300)
+
+class DateTeam(models.Model):
     Team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    DateNTime = models.DateTimeField(max_length=100)
+    Date = models.ForeignKey(Date, on_delete=models.CASCADE)
+
 
 class Application(models.Model):
     TgUser = models.ForeignKey(TgUser, on_delete=models.CASCADE)

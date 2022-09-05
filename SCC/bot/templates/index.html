@@ -1,4 +1,5 @@
 {% load static %}
+{% load define_action %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,16 @@
     <title>Телеграм Бот ЦСК | Админ панель</title>
     <link rel="icon" href={% static 'img/SCC_logo.jpg' %}>
     <link rel="stylesheet" href={% static 'css/styles.css' %}>
+    {% if not user.is_superuser%}
+    <style type="text/css">
+        .navbar, .content{
+        display: none !important;
+    }
+
+    .download-file-form>.form-row>.input.dates{
+        width: 20%;}
+       </style>
+    {% endif %}
 </head>
 <body>
     <div class="mobile">
@@ -21,18 +32,51 @@
     </div>
         <ul class="navbar">
             <li data-link="/applications" class="selected">Заявки</li>
+            {% if user.is_superuser %}
             <li data-link="/directions">Направления</li>
             <li data-link="/teams">Коллективы</li>
+            {% else %}
+            <li data-link="/teams">Коллектив</li>
+            {% endif %}
+            <li data-link="/logout"><a src="logout">Выйти</a></li>
         </ul>
     </div>
+    <form method="POST" action="/file" class="download-file-form">
+        {% csrf_token %}
+        <h3>Выберите коллективы:</h3>
+        <div class="form-row">
+        {% for team in teams %}
+            <div class="input sb">
+                <p>{{team.Name}}</p>
+                <input type="checkbox" style="width: 20px" name="Teams" value="{{team.Name}}">
+            </div>
+            {% endfor %}
+        </div>
+        <h3>Выберите даты:</h3>
+        <div class="form-row">
+
+            {% define "" as prevDate %}
+            {% for date in Dates %}
+            {% if not prevDate == date.Date %}
+            <div class="input dates">
+                <p>{{date.Date}}</p>
+                {% define date.Date as prevDate %}
+                <input type="checkbox" name="Date" value="{{date.Date}}">
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <button>Скачать</button>
+    </form>
     <div id="selected" data-link="/applications" style="opacity: 1;" class="content">
+        
         <div class="applications">
             <div class="annotation">
                 <div class="col-1">ФИО</div>
                 <div class="col-2">Номер телефона</div>
                 <div class="col-3">Напраление</div>
                 <div class="col-4">Коллектив</div>
-                <div class="col-5">Дата и время</div>
+                <div class="col-5">Дата</div>
             </div>
             {% for application in applications %}
             <div class="application">
@@ -40,15 +84,17 @@
                 <div class="col-2">{{application.Phone}}</div>
                 <div class="col-3">{{application.Direction.Name}}</div>
                 <div class="col-4">{{application.Team.Name}}</div>
-                <div class="col-5">{{application.Date.DateNTime|date:'m-d - H:i'}}</div>
+                <div class="col-5">{{application.Date.Date}}</div>
             </div>
             {% endfor %}
         </div>
     </div>
     <div data-link="/teams" style="left: -100%;" class="content">
         <div class="teams">
+
+            {% if user.is_superuser %}
             <div class="team">
-                <form class="team-form" enctype="multipart/form-data">
+                <form class="team-form" id="create-team" enctype="multipart/form-data">
 
                     <h3>Добавить новый коллекив:</h3>
                     {% csrf_token %}
@@ -61,6 +107,10 @@
                             <p>Место проведения кастингов:</p>
                             {{team_form.Place}}
                          </div>
+                         <div class="input">
+                            <p>Направление:</p>
+                            {{team_form.Direction}}
+                         </div>
                     </div>
                     <div class="form-row">
                         <div class="input">
@@ -70,41 +120,118 @@
                         <div class="input">
                             <p>Фотография:</p>
                             {{team_form.Picture}}
+                            <img src="#" alt="Image" id="prevImage">
                         </div>
                     </div>
-                    <h4>Контактные данные:</h4>
+                    <div class="form-row">
+
+                        <div class="input">
+                            <p>Группа ВК:</p>
+                            {{team_form.Vk}}
+                        </div>
+                        <div class="input">
+                            <p>Время кастинга:</p>
+                            {{team_form.Time}}
+                        </div>
+                    </div>
                     <div class="form-row">
                         <div class="input">
-                            <p>Имя:</p>
-                            {{team_form.ManagersName}}
+                            <p>Контактные данные:</p>
+                            {{team_form.Contacts}}
                         </div>
                         <div class="input">
-                            <p>Номер телефона:</p>
-                            {{team_form.ManagersPhone}}
-                        </div>
-                        <div class="input">
-                            <p>Почта:</p>
-                            {{team_form.ManagersEmail}}
+                            <p>Текст после записи:</p>
+                            {{team_form.Prompt}}
                         </div>
                     </div>
 
-                    <h4>Даты и время кастингов:</h4>
+                    <h4>Даты кастинга:</h4>
+
                     <img class="icon add-date" src={% static 'img/plus.png' %} alt="create">
+                    <div class="form-row" style="flex-wrap: wrap;">
+                    </br>
+                    </div>
                     </br>
                     </br>
                     <button type="button">Сохранить</button>
                 </form>
-            </div>
-            {% for team in teams %}
-            <div class="team">
                 
-                <img data-team-id={{team.id}} class="icon delete delete-team" src={% static 'img/cancel.png' %} alt="create">
-                <h3>{{team.Name}}</h3>
-                <img class="photo" src={{team.Picture.url}}>            
-                <p>
-                    {{team.Decription}} 
-                </p>
             </div>
+            {% endif %}
+            {% for team in teams %}
+                
+                <div class="team">
+                    <form class="team-form update" enctype="multipart/form-data">
+
+                        <input type="hidden" name="id" value="{{team.id}}">
+                        {% if user.is_superuser %}
+                        <img data-team-id={{team.id}} class="icon delete delete-team" src={% static 'img/cancel.png' %} alt="create">
+                        {% endif %}
+                <h3>Редактировать коллектив:</h3>
+                    {% csrf_token %}
+                        <div class="form-row">
+                            <div style="width: 50%;" class="input">
+                                <p>Название:</p>
+                                <input type="text" name="Name" maxlength="300" value="{{team.Name}}" required="" id="id_Name">
+                            </div>
+                             <div class="input">
+                                <p>Место проведения кастингов:</p>
+                                <input type="text" name="Place" maxlength="300" value="{{team.Place}}" required="" id="id_Place">
+                             </div>
+                             <div class="input">
+                                <p>Направление:</p>
+                                {{team_form.Direction}}
+                             </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input">
+                                <p>Описание:</p>
+                                <textarea name="Decription" cols="40" rows="3" maxlength="2000" required="" id="id_Decription">{{team.Decription}}</textarea>
+                            </div>
+                            <div class="input">
+                                <p>Фотография:</p>
+                                <img src={{team.Picture}} alt="Image" class="prevImage">
+                            </div>
+                        </div>
+                        <div class="form-row">
+    
+                            <div class="input">
+                                <p>Группа ВК:</p>
+                                <input type="text" name="Vk" maxlength="300" value="{{team.Vk}}" required="" id="id_Vk">
+                            </div>
+                            <div class="input">
+                                <p>Время кастинга:</p>
+                                <input type="text" name="Time" maxlength="300" value="{{team.Time}}" required="" id="id_Time">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input">
+                                <p>Контактные данные:</p>
+                                <textarea name="Contacts" cols="40" rows="1" maxlength="1000" required="" id="id_Contacts">{{team.Contacts}}</textarea>
+                            </div>
+                            <div class="input">
+                                <p>Текст после записи:</p>
+                                <textarea name="Prompt" cols="40" rows="1" maxlength="2000" required="" id="id_Prompt">{{team.Prompt}}</textarea>
+                            </div>
+                        </div>
+    
+                        <h4>Даты кастинга:</h4>
+                        
+                        <img class="icon add-date" src="/static/img/plus.png" alt="create">
+                        <div class="form-row" style="flex-wrap: wrap;">
+                            <br>
+                            {% for date in team.dateteam_set.all %}
+
+                            <div class="data-div">
+                                <input class="Data" value={{date.Date.Date}} name="Date"><img class="icon delete-date" src="static/img/cancel.png" alt="create">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <br>
+                        <br>
+                        <button type="button">Обновить</button>
+                    </form>
+                </div>
             {% endfor %}
         </div> 
     </div>

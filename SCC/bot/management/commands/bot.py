@@ -31,13 +31,16 @@ def get_text_messages(message):
     user.save()
     if isExist:
       res = bot.send_message(message.from_user.id, "Привет! Здесь вы можете записаться на кастинг :)", reply_markup=telebot.types.ReplyKeyboardRemove(selective=False))
-      MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
     kb = telebot.types.InlineKeyboardMarkup()
     for direction in Direction.objects.all():
       btn = telebot.types.InlineKeyboardButton(direction.Name, callback_data=direction.id)
       kb.add(btn)
     kb = kb if len(kb.keyboard)>0 else telebot.types.ReplyKeyboardRemove(selective=False)
     res = bot.send_message(message.from_user.id, "Выберите интересующее Вас направление", reply_markup = kb)
+    try:
+      bot.delete_message(message.from_user.id, user.EditMessId)
+    except:
+      pass
     user.EditMessId = res.id
     user.save()
   elif user.Status == "Ввод ФИО":
@@ -57,7 +60,11 @@ def get_text_messages(message):
       kb = telebot.types.InlineKeyboardMarkup()
       kb.add(telebot.types.InlineKeyboardButton("Отмена", callback_data="cancel"))
       kb.add(telebot.types.InlineKeyboardButton("Отправить", callback_data="send"))
-      res=bot.send_message(chat_id=message.chat.id, text=f'*Направление*: {application.Direction.Name}\n*Коллектив*: {application.Team.Name}\n*Дата в время*: {application.Date.DateNTime.strftime("%m.%d - %H:%M")}\n*ФИО*: {application.Name}\n*Номер телефона*: {application.Phone}\nОтправить Вашу заявку?', reply_markup=kb, parse_mode="Markdown")
+      res=bot.send_message(chat_id=message.chat.id, text=f'*Направление*: {application.Direction.Name}\n*Коллектив*: {application.Team.Name}\n*Дата*: {application.Date.Date}\n*ФИО*: {application.Name}\n*Номер телефона*: {application.Phone}\nОтправить Вашу заявку?', reply_markup=kb, parse_mode="Markdown")
+      try:
+        bot.delete_message(message.from_user.id, user.EditMessId)
+      except:
+        pass
       user.EditMessId = res.id
       user.save()
     else:
@@ -90,9 +97,9 @@ def callback_inline(call):
                 user.Status = "Выбор коллектива"
                 user.save()
                 ikb = telebot.types.InlineKeyboardMarkup()
-                ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другое направление", callback_data="back"))
                 for team in Team.objects.filter(Direction = application.Direction):
                   ikb.add(telebot.types.InlineKeyboardButton(team.Name, callback_data=team.id))
+                ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другое направление", callback_data="back"))
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=user.EditMessId, text="Выберите коллектив", reply_markup=ikb )
                 #res = bot.send_message(call.message.chat.id, "Выберите коллектив", reply_markup = ikb)
                 #MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
@@ -118,18 +125,28 @@ def callback_inline(call):
                 application.save()
                 user.Status = "Выбор Даты"
                 user.save()
-                ikb = telebot.types.InlineKeyboardMarkup()
 
                 bot.delete_message(call.message.chat.id, user.EditMessId)
-                ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другой коллектив", callback_data='back'))
-                for dt in Date.objects.filter(Team = application.Team):
-                  ikb.add(telebot.types.InlineKeyboardButton(dt.DateNTime.strftime("%m.%d в %H:%M"), callback_data=dt.id))
                 with open(application.Team.Picture.path, 'rb') as photo:
-                  res = bot.send_photo(call.message.chat.id, photo, application.Team.Decription)
+                  ikb = telebot.types.InlineKeyboardMarkup()
+                  ikb.add(telebot.types.InlineKeyboardButton("Группа ВКонтакте", url=application.Team.Vk))
+                  res = bot.send_photo(call.message.chat.id, photo, application.Team.Decription, reply_markup=ikb)
                   MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
-                res = bot.send_message(call.message.chat.id, f"Место проведения кастинга: \n{application.Team.Place}")
-                MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
-                res = bot.send_message(call.message.chat.id, "Выберите дату и время кастинга", reply_markup=ikb)
+
+                
+                ikb = telebot.types.InlineKeyboardMarkup()
+                btns = Date.objects.filter(dateteam__Team = application.Team).values('id','Date')
+                for i in range(len(btns)//3):
+                  ikb.row(telebot.types.InlineKeyboardButton(btns[i*3]["Date"], callback_data=btns[i*3]["id"]),
+                  telebot.types.InlineKeyboardButton(btns[i*3+1]["Date"], callback_data=btns[i*3+1]["id"]),
+                  telebot.types.InlineKeyboardButton(btns[i*3+2]["Date"], callback_data=btns[i*3+2]["id"]))
+                if len(btns)%3>1:
+                  ikb.row(telebot.types.InlineKeyboardButton(btns[len(btns)-(len(btns)%3)]["Date"], callback_data=btns[len(btns)-(len(btns)%3)]["id"]),
+                  telebot.types.InlineKeyboardButton(btns[len(btns)-(len(btns)%3)+1]["Date"], callback_data=btns[len(btns)-(len(btns)%3)+1]["id"]))
+                elif len(btns)%3>0:
+                  ikb.row(telebot.types.InlineKeyboardButton(btns[len(btns)-(len(btns)%3)]["Date"], callback_data=btns[len(btns)-(len(btns)%3)]["id"]))
+                ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другой коллектив", callback_data='back'))
+                res = bot.send_message(call.message.chat.id, f"Кастинг проводится по адресу *{application.Team.Place} {application.Team.Time}* \nВыберите дату кастинга", reply_markup=ikb, parse_mode="Markdown")
                 user.EditMessId = res.id
                 user.save()
               except Exception as e:
@@ -142,9 +159,9 @@ def callback_inline(call):
                 user.Status = "Выбор коллектива"
                 user.save()
                 ikb = telebot.types.InlineKeyboardMarkup()
-                ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другое направление", callback_data="back"))
                 for team in Team.objects.filter(Direction = application.Direction):
                   ikb.add(telebot.types.InlineKeyboardButton(team.Name, callback_data=team.id))
+                ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другое направление", callback_data="back"))
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=user.EditMessId, text="Выберите коллектив", reply_markup=ikb )
             else:
                 try:
@@ -174,7 +191,7 @@ def callback_inline(call):
               user.Status = ""
               user.save()
               bot.delete_message(call.message.chat.id, user.EditMessId)
-              bot.send_message(chat_id=call.message.chat.id, text=f'Заявка отправлена✅\n\n*Коллектив*: {application.Team.Name}\n*Место*: {application.Team.Place}\n*Дата и время*: {application.Date.DateNTime.strftime("%m.%d в %H:%M")}\n*ФИО*: {application.Name}\n\nЕсли у вас возникли вопросы:\n {application.Team.ManagersName}\n {application.Team.ManagersPhone}\n {application.Team.ManagersEmail}', parse_mode="Markdown", reply_markup='')
+              bot.send_message(chat_id=call.message.chat.id, text=f'Заявка отправлена✅\n\n*Коллектив*: {application.Team.Name}\n*Место*: {application.Team.Place}\n*Дата и время*: {application.Date.Date} {application.Team.Time}\n*ФИО*: {application.Name}\n\n_{application.Team.Prompt}_\n\nЕсли у вас возникли вопросы:\n{application.Team.Contacts}', parse_mode="Markdown", reply_markup='')
               res = bot.send_message(call.message.chat.id, "Чтобы отправить еще одну заявку нажмите /start")
               MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
 

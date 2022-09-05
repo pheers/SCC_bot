@@ -19,8 +19,10 @@ from django.urls import path
 from .views import *
 urlpatterns = [
     path('login', Login.as_view()),
-    path('main', Main.as_view()),
+    path('', Main.as_view()),
     path('applications', Applications.as_view()),
     path('directions', Directions.as_view()),
     path('teams', Teams.as_view()),
+    path('team/update', update_team),
+    path('file', download_file),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

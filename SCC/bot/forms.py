@@ -7,9 +7,11 @@ class TeamForm(ModelForm):
 
     class Meta:
         model = Team
-        fields = ['Name', 'Picture', 'Decription', 'Place', 'Direction', 'ManagersName', 'ManagersPhone', 'ManagersEmail']
+        fields = ['Name', 'Picture', 'Decription', 'Place', 'Direction', 'Vk', 'Contacts', 'Prompt', 'Time']
         widgets = {
             'Decription': forms.Textarea(attrs={'rows': 3}),
+            'Prompt': forms.Textarea(attrs={'rows': 1}),
+            'Contacts': forms.Textarea(attrs={'rows': 1}),
         }
 
 class DirectionForm(ModelForm):

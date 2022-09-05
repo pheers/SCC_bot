@@ -219,34 +219,6 @@ margin-top: 17px;
     display: none;
 }
 
-@media (max-width: 1500px) {
-    body{
-        width: 100%;
-        padding: 0;
-    }
-    .navbar{
-        width: 100%;
-        padding: 0%;
-    }
-    .content{
-        width: 100%;
-        left: 0 !important;
-    }
-}
-
-@media (max-width: 600px) {
-    .mobile{
-        display: block;
-    }
-    body{
-        height: 100vh;
-        width: 100vw;
-        padding: 0;
-    }
-    .navbar, .content{
-        display: none !important;
-    }
-}
 input{
     display: flex;
     justify-content: space-between;
@@ -266,12 +238,13 @@ input:focus {
 
 .Data{
     display: block;
-    width: auto;
+    width: 80%;
 }
 
 .data-div{
     display: flex;
-    padding-top: 10px;
+    padding: 10px;
+    width: 80px;
 }
 .form {
     top: 0;
@@ -295,7 +268,7 @@ input:focus {
       background: #ffd9b5;
       width: calc(100% - 20px);
       border: none;
-      height: 20px;
+      height: 40px;
       margin-bottom: 20px;
       border-radius: 15px;
       font-size: 25px;
@@ -358,12 +331,13 @@ button:active {
 
 textarea{
     resize: none;
+    width: 95%;
+    height: 200px;
 }
 
  .form-row{
     width: 100%;
     display: flex;
-    justify-content: space-between;
  }
  .input{
     width: 100%;
@@ -433,4 +407,96 @@ textarea{
       opacity: 0;
     }
   }
+
+.message{
+    position: fixed;
+    top: 10%;
+    left: 1%;
+    max-width: 12%;
+    height: auto;
+    padding: 10px;
+    border-radius: 8px;
+    -webkit-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    box-shadow: -1px 9px 19px -2px rgba(34, 60, 80, 0.2);
+    background-color: white;
+    transition: all ease-in-out .3s;
+}
   
+#prevImage{
+    max-width: 90%;
+    border-radius: 8px;
+    padding: 10px;
+    max-height: 150pxz;
+    display: none;
+}
+
+.prevImage{
+    max-width: 90%;
+    border-radius: 8px;
+    padding: 10px;
+    max-height: 150px;
+}
+.download-file-form{
+    padding: 20px;
+}
+.download-file-form>.form-row{
+    flex-wrap: wrap;
+}
+.download-file-form>.form-row>.input{
+    width: 100%;
+    padding: 10px;
+    display: flex;
+}
+
+.download-file-form>.form-row>.input.dates{
+    width: 10%;
+}
+
+.sb{
+    justify-content: space-between;
+}
+
+
+
+
+@media (max-width: 1500px) {
+    body{
+        width: 100%;
+        padding: 0;
+    }
+    .navbar{
+        width: 100%;
+        padding: 0%;
+    }
+    .content{
+        width: 100vw;
+        left: 0 !important;
+        margin: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .mobile{
+        display: none;
+    }
+    body{
+        height: 100vh;
+        width: 100vw;
+        padding: 0;
+
+    
+    }
+    .container{
+        -moz-transform: scale(0.85, 0.85); /* Moz-browsers */
+    zoom: 0.85; /* Other non-webkit browsers */
+    zoom: 85%; /* Webkit browsers */
+    }
+    .navbar, .content{
+        display: none !important;
+    }
+
+    .download-file-form>.form-row>.input.dates{
+        width: 20%;
+}
+}
