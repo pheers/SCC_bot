@@ -19,7 +19,6 @@ class Main(View):
         if request.user.is_authenticated:
             names = []
             for group in request.user.groups.all():
-                print(group.name)
                 names.append(str(group))
             if request.user.is_superuser:
                 d_args = {}
@@ -108,7 +107,6 @@ class Teams(View):
 
 def update_team(request):
     if request.method == "POST":
-        print(request.POST.get('id'))
         team = Team.objects.get(id = request.POST.get('id'))
 
         if request.POST.get('Name'):
@@ -150,8 +148,6 @@ def download_file(request):
         if len(request.POST.getlist("Teams"))>0:
             args["Team__Name__in"] = request.POST.getlist("Teams")
         doc = docx.Document()
-        print(request.POST.getlist("Teams"))
-        print(args)
         applications = Application.objects.filter(IsFinished=True, **args).order_by('Team__Name', "Date__Date")
         if applications.count() == 0:
             return render(template_name='no_applications.html', request=request)

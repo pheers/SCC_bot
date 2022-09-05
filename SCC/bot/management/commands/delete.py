@@ -10,5 +10,3 @@ class Command(BaseCommand):
             user.delete()
         for application in Application.objects.all():
             application.delete()
-        for date in Date.objects.all():
-            date.delete()

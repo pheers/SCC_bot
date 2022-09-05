@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from random import randint
 from tokenize import group, triple_quoted
 from django.core.management.base import BaseCommand
@@ -6,6 +5,7 @@ from django.conf import settings
 import telebot
 import markdown
 import re
+from bs4 import BeautifulSoup
 from bot.models import *
 bot = telebot.TeleBot(settings.TELEGRAM_BOT_API_KEY)
 
@@ -100,7 +100,7 @@ def callback_inline(call):
                 user.save()
                 ikb = telebot.types.InlineKeyboardMarkup()
                 for team in Team.objects.filter(Direction = application.Direction):
-                  ikb.add(telebot.types.InlineKeyboardButton(''.join(BeautifulSoup(markdown.markdown(f'{team.Name}')).findAll(text=True)), callback_data=team.id))
+                  ikb.add(telebot.types.InlineKeyboardButton(markdown.markdown(f'{team.Name}'), callback_data=team.id, parse_mode='Markdown'))
                 ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другое направление", callback_data="back"))
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=user.EditMessId, text="Выберите коллектив", reply_markup=ikb )
                 #res = bot.send_message(call.message.chat.id, "Выберите коллектив", reply_markup = ikb)
@@ -162,7 +162,7 @@ def callback_inline(call):
                 user.save()
                 ikb = telebot.types.InlineKeyboardMarkup()
                 for team in Team.objects.filter(Direction = application.Direction):
-                  ikb.add(telebot.types.InlineKeyboardButton(''.join(BeautifulSoup(markdown.markdown(f'{team.Name}')).findAll(text=True)), callback_data=team.id))
+                  ikb.add(telebot.types.InlineKeyboardButton(mmmmmmmmmmmmmmmmmmmmmm''.join(BeautifulSoup(markdown.markdown(f'{team.Name}').findAll(text=True)), callback_data=team.id), parse_mode='Markdown')
                 ikb.add(telebot.types.InlineKeyboardButton("← Выбрать другое направление", callback_data="back"))
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=user.EditMessId, text="Выберите коллектив", reply_markup=ikb )
             else:

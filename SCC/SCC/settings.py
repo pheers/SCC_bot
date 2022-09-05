@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4558mqm9i7y!5@87@f1$7ec%#+b@ytvf#1wz9v(9f66(m21w6p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 LOGIN_REDIRECT_URL = '/login'
@@ -110,6 +110,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+USE_UNICODE = True
 USE_TZ = False
 
 
@@ -130,4 +131,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-TELEGRAM_BOT_API_KEY = '1375350998:AAFCKADUqsB5k-wfd5tcf4JvtXAslk46JwE'
+TELEGRAM_BOT_API_KEY = '5785819360:AAGC9hLRo_FfZ_QTa-CvpApgUsq7_vUHyRw'
