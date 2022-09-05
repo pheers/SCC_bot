@@ -132,7 +132,10 @@ def callback_inline(call):
                 with open(application.Team.Picture.path, 'rb') as photo:
                   ikb = telebot.types.InlineKeyboardMarkup()
                   ikb.add(telebot.types.InlineKeyboardButton("Группа ВКонтакте", url=application.Team.Vk))
-                  res = bot.send_photo(call.message.chat.id, photo, application.Team.Decription, reply_markup=ikb)
+                  name = application.Team.Name
+                  if name == 'ВИС «Фиеста»':
+                    name = "Вокально-инструментальная студия «Фиеста»"
+                  res = bot.send_photo(call.message.chat.id, photo, "*" + ''.join(BeautifulSoup(markdown.markdown(name)).findAll(text=True)) + "*\n\n" + application.Team.Decription, parse_mode = "Markdown", reply_markup=ikb)
                   MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
 
                 
