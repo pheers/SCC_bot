@@ -81,13 +81,11 @@ def get_text_messages(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
   try:
-      if call.message:
+    if call.message:
           user = TgUser.objects.get_or_create(id = call.message.chat.id)[0]
           application = Application.objects.get_or_create(TgUser = user, IsFinished = False)[0]
-	  
-	  for mess in MessageForDelete.objects.filter(TgUser = user):
-            
-	    try:
+          for mess in MessageForDelete.objects.filter(TgUser = user):
+            try:
               bot.delete_message(call.message.chat.id, mess.mess_id)
             except:
               pass
@@ -122,7 +120,6 @@ def callback_inline(call):
               bot.edit_message_text(chat_id=call.message.chat.id, message_id=user.EditMessId, text="Выберите интересующее вас направление", reply_markup=kb )
             else:
               try:
-
                 team = Team.objects.get(id = call.data)
                 application.Team = team
                 application.save()
@@ -133,15 +130,15 @@ def callback_inline(call):
                 ikb.add(telebot.types.InlineKeyboardButton("Группа ВКонтакте", url=application.Team.Vk))
                 name = application.Team.Name
                 if name == 'ВИС «Фиеста»':
-                	name = "Вокально-инструментальная студия «Фиеста»"
-		try:
-			res = bot.send_photo(call.message.chat.id, application.Team.FileId, "*" + ''.join(BeautifulSoup(markdown.markdown(name)).findAll(text=True)) + "*\n\n" + application.Team.Decription, parse_mode = "Markdown", reply_markup=ikb)
+                  name = "Вокально-инструментальная студия «Фиеста»"
+                try:
+                  res = bot.send_photo(call.message.chat.id, application.Team.FileId, "*" + ''.join(BeautifulSoup(markdown.markdown(name)).findAll(text=True)) + "*\n\n" + application.Team.Decription, parse_mode = "Markdown", reply_markup=ikb)
                 except:
-		  with open(application.Team.Picture.path, 'rb') as photo:
+                  with open(application.Team.Picture.path, 'rb') as photo:
                     res = bot.send_photo(call.message.chat.id, photo, "*" + ''.join(BeautifulSoup(markdown.markdown(name)).findAll(text=True)) + "*\n\n" + application.Team.Decription, parse_mode = "Markdown", reply_markup=ikb)
                     application.Team.FileId = res.photo.file_id
-		    application.Team.save()
-		MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
+                    application.Team.save()
+                MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
 
                 
                 ikb = telebot.types.InlineKeyboardMarkup()
@@ -204,13 +201,7 @@ def callback_inline(call):
               bot.send_message(chat_id=call.message.chat.id, text=f'Заявка отправлена✅\n\n*Коллектив*: {application.Team.Name}\n*Место*: {application.Team.Place}\n*Дата и время*: {application.Date.Date} {application.Team.Time}\n*ФИО*: {application.Name}\n\n_{application.Team.Prompt}_\n\nЕсли у вас возникли вопросы:\n{application.Team.Contacts}', parse_mode="Markdown", reply_markup='')
               res = bot.send_message(call.message.chat.id, "Чтобы отправить еще одну заявку нажмите /start")
               MessageForDelete.objects.create(TgUser = user, mess_id = res.message_id).save()
-
-
-
-
-
-          
-      bot.answer_callback_query(call.id)
+    bot.answer_callback_query(call.id)
 
   except Exception as e:
       print(repr(e))
