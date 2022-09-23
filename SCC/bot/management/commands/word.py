@@ -37,8 +37,6 @@ class Command(BaseCommand):
             cell = table.cell(row, 3)
             cell.text = str(app.Date.Date)
         name = 'dw'
-        for i in kwargs:
-            name += kwargs[i]
         doc.save(f"static/docx/{name}.docx")
 
     def add_arguments(self, parser):

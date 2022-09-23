@@ -25,7 +25,7 @@ class Team(models.Model):
     Contacts = models.CharField(max_length=1000)
     Prompt = models.CharField(max_length=2000)
     Time = models.CharField(max_length=300)
-
+    FileId = models.CharField(max_length=1000, null=True)
 class Date(models.Model):
     Date = models.CharField(max_length=300)
 
